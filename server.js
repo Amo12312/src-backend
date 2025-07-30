@@ -1,5 +1,3 @@
-// backend/server.js
-// Main server file for Hostinger deployment
 const express = require('express');
 const Razorpay = require('razorpay');
 const bodyParser = require('body-parser');
@@ -8,11 +6,30 @@ require('dotenv').config();
 
 const app = express();
 
+// CORS configuration
+const allowedOrigins = ['http://localhost:5173', 'https://your-deployment-domain.com']; // Add production domain as needed
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
+
+// CORS middleware
 app.use(cors({
-  origin: 'http://localhost:5173', // or '*' for all origins (not recommended for production)
+  origin: allowedOrigins,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true // if you need to send cookies
+  credentials: true,
 }));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -31,8 +48,6 @@ app.get('/', (req, res) => {
 app.post('/create-subscription', async (req, res) => {
   const { amount, name, email, contact } = req.body;
   try {
-    // For recurring payments, the plan should be set to 1 INR/month in Razorpay dashboard.
-    // 'quantity' will multiply the plan amount.
     const plan_id = process.env.RAZORPAY_PLAN_ID;
     if (!plan_id) {
       return res.status(500).json({ error: 'Plan ID not configured.' });
@@ -40,12 +55,12 @@ app.post('/create-subscription', async (req, res) => {
     if (!amount || isNaN(amount) || amount < 1) {
       return res.status(400).json({ error: 'Invalid amount for subscription.' });
     }
-    // Create subscription with quantity = selectedAmount
+
     const subscription = await razorpay.subscriptions.create({
       plan_id,
       customer_notify: 1,
-      total_count: 12, // 12 months
-      quantity: amount, // User-selected monthly donation amount (multiplies plan amount)
+      total_count: 12,
+      quantity: amount,
       notes: {
         donor_name: name,
         donor_email: email,
@@ -56,7 +71,6 @@ app.post('/create-subscription', async (req, res) => {
     res.json({ subscription_id: subscription.id });
   } catch (err) {
     console.error('Subscription creation error:', err);
-    // Razorpay error details
     if (err.error && err.error.description) {
       return res.status(400).json({ error: err.error.description });
     }
@@ -73,13 +87,6 @@ app.use((err, req, res, next) => {
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({ error: 'Route not found' });
-});
-
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  next();
 });
 
 const PORT = process.env.PORT || 3000;
