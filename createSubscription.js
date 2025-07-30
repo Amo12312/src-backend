@@ -10,7 +10,7 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors({ origin: "*" }));
-app.use(bodyParser.json());
+app.use(bodyParser.json());   
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID, // set in .env
