@@ -2,7 +2,7 @@
   "name": "razorpay-backend",
   "version": "1.0.0",
   "description": "Backend for Razorpay subscription integration",
-  "main": "server.js",
+  "main": "createSubscription.js",
   "scripts": {
     "start": "node createSubscription.js",
     "dev": "nodemon createSubscription.js"
