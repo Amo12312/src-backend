@@ -4,8 +4,8 @@
   "description": "Backend for Razorpay subscription integration",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "start": "node createSubscription.js",
+    "dev": "nodemon createSubscription.js"
   },
   "dependencies": {
     "body-parser": "^1.20.2",
