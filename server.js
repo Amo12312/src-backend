@@ -1,7 +1,7 @@
-const express = require('express');
-const Razorpay = require('razorpay');
-const bodyParser = require('body-parser');
-const cors = require('cors');
+import express from 'express';
+import Razorpay from 'razorpay';
+import { json, urlencoded } from 'body-parser';
+import cors from 'cors';
 require('dotenv').config();
 
 const app = express();
@@ -30,8 +30,10 @@ app.use(cors({
   credentials: true,
 }));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+app.use(json());
+app.use(urlencoded({ extended: true }));
 
 // Initialize Razorpay
 const razorpay = new Razorpay({
