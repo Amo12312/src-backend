@@ -6,11 +6,21 @@ const express = require('express');
 const Razorpay = require('razorpay');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const helmet = require('helmet');
 require('dotenv').config();
 
 const app = express();
 app.use(cors({ origin: "*" }));
 app.use(bodyParser.json());   
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      imgSrc: ["'self'", "data:"],
+      // ...other directives
+    },
+  },
+}));
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID, // set in .env

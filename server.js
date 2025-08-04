@@ -10,7 +10,7 @@ const app = express();
 
 const allowedOrigins = [
   'http://localhost:5173', // local dev
-  'https://src-backend-git-main-amo12312s-projects.vercel.app/' // production frontend
+  'https://src-backend-six.vercel.app/' // production frontend
 ];
 
 app.use(cors({
@@ -83,4 +83,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-}); 
+});
